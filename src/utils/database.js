@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-
+const { ServiceProviderModel } = require("../models/ServiceProviderModel");
+const { UserModel } = require("../models/UserModel");
 
 
 // Function to connect our Database
@@ -10,6 +11,15 @@ async function dbConnect() {
     await mongoose.connect(databaseUrl);
 }
 
+async function dbDisconnect() {
+    // Disconnect from MongoDB
+    await mongoose.connection.close();
+}
+
+async function dbDrop() {
+    await mongoose.connection.db.dropDatabase();
+}
+
 module.exports = {
-    dbConnect
+    dbConnect, dbDisconnect, dbDrop 
 }
