@@ -32,10 +32,13 @@ const ServiceProviderSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    documentation: {
-        type: multipart/form-data,
-        required: true,
-    }, 
+    documentation: [
+        {
+            fileName: { type: String, required: true },
+            filePath: { type: String, required: true },
+            uploadedAt: {type: Date, default: Date.now },
+        },
+    ], 
     experience: {
         type: String,
         required: true,
