@@ -1,6 +1,4 @@
 const express = require("express");
-
-// Create an instance of a route
 const router = express.Router();
 
 
