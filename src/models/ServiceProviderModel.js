@@ -32,6 +32,10 @@ const ServiceProviderSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    documentation: {
+        type: multipart/form-data,
+        required: true,
+    }, 
     experience: {
         type: String,
         required: true,
