@@ -22,7 +22,6 @@ const ServiceProviderSchema = new mongoose.Schema({
         required: true,
         minLength: 8,
         trim: true,
-        unique: true
     },
     image: {
         type: String,
