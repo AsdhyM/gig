@@ -34,8 +34,9 @@ const UserSchema = new mongoose.Schema({
     },
     mobile: {
         type: String,
-        default: "0000000000"
-    }
+        default: "0000000000",
+        match: [/^\d{10$/, "Mobile number must be 10 digits"],
+    },
 })
 
 // Model based on the schema

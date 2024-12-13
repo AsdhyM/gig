@@ -28,6 +28,7 @@ app.get("/", (request, response) => {
 });
 
 // Middleware - Admin routes
+// localhost:3000/admin
 app.use('/admin', adminRouter);
 
 // Fallback for undefined routes

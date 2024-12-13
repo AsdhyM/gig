@@ -7,13 +7,13 @@ const { upload } = require("../middleware/fileUpload");
 
 
 router.post('/addserviceprovider', 
-    upload.fields[(
+    upload.fields([
         { name: "image", maxCount: 1},
         { name: "documentation", maxCount: 5 }
-    )], 
+    ]), 
     addServiceProvider
 );
 
 module.exports = {
-    router
+    adminRouter: router
 }

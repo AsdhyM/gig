@@ -11,9 +11,13 @@ const { dbConnect } = require("./utils/database.js");
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, async () => {
+    try{ 
+        await dbConnect();
+        await connectCloudinary();
 
-    await dbConnect();
-    await connectCloudinary();
-
-    console.log("Server is running on port http://localhost:" + PORT);
-});
+        console.log("Server is running on port http://localhost:" + PORT);
+    } catch (error) {
+        console.error("Failed to initialize server:", error);
+        process.exit(1);
+    }
+})
