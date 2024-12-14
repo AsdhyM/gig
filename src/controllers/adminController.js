@@ -34,12 +34,12 @@ const addServiceProvider = async (request, response) => {
         }
 
         // Validating password
-        if (password.lenght < 8) {
+        if (password.length < 8) {
             return response.status(400).send("Password must be at least 8 characters.");
         }
         
         // Validating image and documentation
-        if (!image || documentation.lenght === 0) {
+        if (!image || documentation.length === 0) {
             return response.status(400).send("Image and documentation files are required.");
         }
 
