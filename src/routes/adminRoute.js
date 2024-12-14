@@ -15,5 +15,5 @@ router.post('/addserviceprovider',
 );
 
 module.exports = {
-    adminRouter: router
+    router
 }

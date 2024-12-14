@@ -18,7 +18,7 @@ const upload = multer ({
     // Maximum of 5MG file size
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: (request, file, callback) => {
-        const approvedTypes = ["applicatrion/pdf", "image/jpeg", "image/png"];
+        const approvedTypes = ["application/pdf", "image/jpeg", "image/png"];
         if (approvedTypes.includes(file.mimetype)) {
             callback(null, true);
         } else {

@@ -47,16 +47,18 @@ const ServiceProviderSchema = new mongoose.Schema({
         required: true,
     },
     availability: {
-        type: Boolean,
-        required: true
+        type: String,
+        enum: ["Available", "Unavailable"],
+        default: "Available"
     },
     date: {
-        type: Number,
+        type: Date,
         required: true
     },
     booking: {
-        type: Object,
-        default: {}
+        customerName: { type: String },
+        serviceDate: { type: Date },
+        comments: { type: String }
     }
 },{minimize:false})
 
