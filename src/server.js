@@ -1,8 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 
-const { adminRouter } = require("./routes/admin_routes");
-console.log(adminRouter);
+const { router } = require("./routes/admin_routes");
+console.log(router);
 
 // Make a server instance
 const app = express();
@@ -29,7 +29,7 @@ app.get("/", (request, response) => {
 
 // Middleware - Admin routes
 // localhost:3000/admin
-app.use('/admin', adminRouter);
+app.use('/admin', router);
 
 // Fallback for undefined routes
 app.use((request, response, next) => {

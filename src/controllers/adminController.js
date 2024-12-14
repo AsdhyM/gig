@@ -3,6 +3,7 @@ const validator = require("validator")
 const bcrypt = require("bcrypt");
 const { ServiceProviderModel } = require("../models/ServiceProviderModel");
 const cloudinary = require("cloudinary").v2
+const jwt = require("jsonwebtoken")
 
 
 // API for adding new service provider
@@ -103,7 +104,32 @@ const addServiceProvider = async (request, response) => {
     }
 };
 
+// API for admin Login
+const adminLogin = async (request, response) => {
+    try {
+
+        const {email, password} = request.body
+
+        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+            
+            const token = jwt.sign(email+password,process.env.JWT_SECRET);
+            response.json({success:true, token})
+
+        } else {
+            response.json({
+                success:false,
+                message:"Invalid credentials"
+            })
+        }
+        
+    } catch (error) {
+        console.error(error);
+        response.status(500).json({ error: "An error occurred, couldn't add service provider."});
+    }
+}
+
 module.exports = {
     addServiceProvider,
+    adminLogin
 }
     
