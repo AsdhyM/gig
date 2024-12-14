@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const { ServiceProviderModel } = require("../models/ServiceProviderModel");
 const { UserModel } = require("../models/UserModel");
 
+require("dotenv").config();
+
 
 // Function to connect our Database
 async function dbConnect() {

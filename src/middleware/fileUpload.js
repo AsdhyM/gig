@@ -1,15 +1,24 @@
 const multer = require("multer");
 
+const path = require("path");
+const fs = require("fs");
+
 const storage = multer.diskStorage({
-    destination: function (request, file, callback) {
-        callback(null, "../../docs/uploads");
+    destination: (request, file, callback) => {
+        const uploadPath = path.join(__dirname, "../../docs/uploads/");
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true});
+        } else {
+            console.log("File does not exist.");
+        }
+        callback(null, uploadPath);
     },
-    filename: function(request, file, callback) {
+    filename: (request, file, callback) => {
         // Giving uploaded files unique names
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         // Getting file extension
         const extension = file.originalname.split('.').pop();
-        callback(null, `${file.fieldname}-${uniqueSuffix}.${extension}`);
+        callback(null, `${file.fieldname}-${uniqueSuffix}.${file.originalname.split('.').pop()}`);
     },
 });
 

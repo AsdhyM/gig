@@ -5,7 +5,18 @@ meta {
 }
 
 post {
-  url: http://localhost:3000/admin/addserviceprovicer
-  body: none
+  url: http://localhost:3000/admin/addserviceprovider
+  body: multipartForm
   auth: none
+}
+
+body:multipart-form {
+  name: John Doe
+  email: johndoe@email.com
+  password: 12345678
+  tradeskill: Electrician
+  experience: 8 years
+  image: @file(C:\Users\asdhy\OneDrive\Desktop\random\profile icon.png)
+  documentation: @file(C:\Users\asdhy\OneDrive\Desktop\random\certificateserviceprovidergig.pdf)
+  about: sifeafaeioasi
 }

@@ -1,6 +1,7 @@
 const express = require("express");
 const validator = require("validator")
 const bcrypt = require("bcrypt");
+const { ServiceProviderModel } = require("../models/ServiceProviderModel");
 const cloudinary = require("cloudinary").v2
 
 
@@ -45,10 +46,11 @@ const addServiceProvider = async (request, response) => {
 
         // Validating booking
         if (booking) {
-            if(!booking.customerName || !booking.serviceDate) {
+            const parsedBooking = typeof booking === "string" ? JSON.parse(booking) : booking;
+            if(!parsedBooking.customerName || !parsedBooking.serviceDate) {
                 return response.status(400).send("Customer name and service date needed for booking!.");
             }
-            if(!validator.isDate(booking.serviceDate)) {
+            if(!validator.isDate(parsedBooking.serviceDate)) {
                 return response.status(400).send("This booking date is not valid.");
             }
         }
@@ -58,29 +60,34 @@ const addServiceProvider = async (request, response) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // Upload image
-        const imageUpload = await cloudinary.uploader.upload(imageFile.path, {resource_type:"image"});
-        const imageUrl = imageUpload.secure_url
+        const imageUpload = await cloudinary.uploader.upload(image.path, {resource_type:"image"});
+        const imageUrl = imageUpload.secure_url;
 
         // Upload documents
         const documentUrls = [];
-        for (const documents of documentation) {
-            const documentUpload = await cloudinary.uploader.upload(documentFile.path, {resource_type:"auto"});
+        for (const file of documentation) {
+            const documentUpload = await cloudinary.uploader.upload(file.path, {resource_type:"auto"});
             documentUrls.push(documentUpload.secure_url);
         }
+        console.log("Uploaded files:", request.files);
 
         const ServiceProviderData = {
-            name,
-            email,
+            name: request.body.name,
+            email: request.body.email,
             password:hashedPassword,
             image:imageUrl,
-            tradeSkill,
+            tradeSkill: request.body.tradeSkill,
             documentation:documentUrls,
-            experience,
-            about,
-            availability,
-            date:Date.now(),
+            experience: request.body.experience,
+            about: request.body.about,
+            availability: request.body.availability,
+            date:date || Date.now(),
             booking: booking || {}
         }
+
+        
+        const newServiceProvider = new ServiceProviderModel(ServiceProviderData);
+        await newServiceProvider.save();
 
         console.log("Service provider information is being saved:", ServiceProviderData);
 
