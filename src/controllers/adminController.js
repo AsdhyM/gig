@@ -3,7 +3,9 @@ const validator = require("validator")
 const bcrypt = require("bcrypt");
 const { ServiceProviderModel } = require("../models/ServiceProviderModel");
 const cloudinary = require("cloudinary").v2
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+
+const jwtSecret = process.env.JWT_SECRET;
 
 
 // API for adding new service provider
@@ -26,7 +28,7 @@ const addServiceProvider = async (request, response) => {
         const documentation = request.files?.documentation || [];
 
         // Validate required fields
-        if(!name || !email || !password || !tradeSkill || !experience || !about) {
+        if(!name || !email || !password || !tradeSkill || !experience || !about || !availability) {
             return response.status(400).send("Missing details are required!.");
         }
 
@@ -110,23 +112,31 @@ const adminLogin = async (request, response) => {
 
         const {email, password} = request.body
 
+        if (!email || !password) {
+            return response.status(400).json({
+                success: false,
+                message: "Email and Password are required."
+            });
+        }
+
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
             
-            const token = jwt.sign(email+password,process.env.JWT_SECRET);
-            response.json({success:true, token})
+            const token = jwt.sign({ email }, jwtSecret, { expiresIn: "1h" });
+
+            return response.status(200).json({success:true, token})
 
         } else {
-            response.json({
+            return response.status(401).json({
                 success:false,
                 message:"Invalid credentials"
-            })
+            });
         }
-        
+
     } catch (error) {
-        console.error(error);
-        response.status(500).json({ error: "An error occurred, couldn't add service provider."});
+        console.error("Error in adminLogin:", error);
+        return response.status(500).json({ error: "An error occurred, couldn't add service provider."});
     }
-}
+};
 
 module.exports = {
     addServiceProvider,

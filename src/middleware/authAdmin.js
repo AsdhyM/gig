@@ -1,30 +1,56 @@
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
+
+const jwtSecret = process.env.JWT_SECRET
+const adminEmail = process.env.ADMIN_EMAIL
+
+
 // Middleware for Admin authentication
-const authAdmin = async (request, response) => {
+async function authAdmin(request, response, next) {
     try {
 
-        const {adminToken} = request.headers
-        if (!adminToken) {
-            return response.json({
-                success: false,
-                message: "Not Authorized to Login as Admin"
-            });
+        // Extracting the token from the Authorization header
+        const authHeader = request.headers.authorization;
+
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return response.status(401).send("Access denied, token missing or invalid");
         }
 
-        const decodedToken = jwt.verify(adminToken, process.env.JWT_SECRET);
+        // Extracting the token from the header
+        const token = authHeader.split(" ")[1];
+        
+        // Verifying the token
+        const decodedToken = jwt.verify(token, jwtSecret);
 
-        if (decodedToken !== process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD) {
-            return response.json({
+        if (decodedToken.email !== adminEmail) {
+            return response.status(401).json({
                 success: false,
-                message: "Not Authorized to Login as Admin"
+                message: "Not Authorized, you need to Log in again."
             });
         }
 
         next();
         
     } catch (error) {
-        console.error(error);
+        console.error("Error in the authAdmin middleware:", error);
+
+        // Checking if token as expired
+        if (error.name === "TokenExpiredError") {
+            return response.status(401).json({
+                success: false,
+                message: "Session expired, please Log in again."
+            });
+        }
+
+        // Checking if token as invalid
+        if (error.name === "JsonWebTokenError") {
+            return response.status(401).json({
+                success: false,
+                message: "Not Authorized, invalid token."
+            });
+        }
+
         response.status(500).json({ error: "An error occurred, couldn't add service provider."});
     }
 }

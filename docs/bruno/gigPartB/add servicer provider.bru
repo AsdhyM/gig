@@ -7,12 +7,20 @@ meta {
 post {
   url: http://localhost:3000/admin/addserviceprovider
   body: multipartForm
-  auth: none
+  auth: bearer
+}
+
+headers {
+  adminToken: eyJhbGciOiJIUzI1NiJ9.YWRtaW5AZ2lnLmNvbTEyMzQ1Njc4.7BXki4hO-d5FaEvAOb1cZnE_MakCacDVPZvUdPcPI1k
+}
+
+auth:bearer {
+  token: 
 }
 
 body:multipart-form {
-  name: John Doe
-  email: johndoe@email.com
+  name: Ann Smith
+  email: annsmith@email.com
   password: 12345678
   tradeskill: Electrician
   experience: 8 years
