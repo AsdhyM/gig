@@ -24,10 +24,7 @@ async function authAdmin(request, response, next) {
         const decodedToken = jwt.verify(token, jwtSecret);
 
         if (decodedToken.email !== adminEmail) {
-            return response.status(401).json({
-                success: false,
-                message: "Not Authorized, you need to Log in again."
-            });
+            return response.status(401).send("Not Authorized, you need to Log in again.");
         }
 
         next();
@@ -37,21 +34,15 @@ async function authAdmin(request, response, next) {
 
         // Checking if token as expired
         if (error.name === "TokenExpiredError") {
-            return response.status(401).json({
-                success: false,
-                message: "Session expired, please Log in again."
-            });
+            return response.status(401).send("Session expired, please Log in again.");
         }
 
         // Checking if token as invalid
         if (error.name === "JsonWebTokenError") {
-            return response.status(401).json({
-                success: false,
-                message: "Not Authorized, invalid token."
-            });
+            return response.status(401).send("Not Authorized, invalid token.");
         }
 
-        response.status(500).json({ error: "An error occurred, couldn't add service provider."});
+        return response.status(500).json({ error: "An error occurred, couldn't add service provider."});
     }
 }
 
