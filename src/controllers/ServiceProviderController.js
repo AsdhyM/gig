@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary").v2;
 const jwt = require("jsonwebtoken");
 const { ServiceProviderModel } = require("../models/ServiceProviderModel");
+const { upload } = require("../middleware/fileUpload");
 
 
 
@@ -12,7 +13,7 @@ const router = express.Router();
 // Register Service Provider
 const registerServiceProvider = async (request, response) => {
     try {
-        const {name, email, password, tradeskill, experience, about} = request.body;
+        const {name, email, password, tradeskill, experience, about, date, booking} = request.body;
         const image = request.files?.image?.[0];
         const documentation = request.files?.documentation || [];
 
@@ -51,11 +52,11 @@ const registerServiceProvider = async (request, response) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Upload image
+        // Upload image to Cloudinary
         const imageUpload = await cloudinary.uploader.upload(image.path, {resource_type:"image"});
         const imageUrl = imageUpload.secure_url;
 
-        // Upload documents
+        // Upload documents to Cloudinary
         const documentUrls = [];
         for (const file of documentation) {
             const documentUpload = await cloudinary.uploader.upload(file.path, {resource_type:"auto"});
@@ -63,12 +64,13 @@ const registerServiceProvider = async (request, response) => {
         }
         console.log("Uploaded files:", request.files);
 
+        // Create service provider data
         const ServiceProviderData = {
             name: request.body.name,
             email: request.body.email,
             password: hashedPassword,
             image: imageUrl,
-            tradeSkill: request.body.tradeSkill,
+            tradeskill: request.body.tradeskill,
             documentation: documentUrls,
             experience: request.body.experience,
             about: request.body.about,
@@ -77,10 +79,12 @@ const registerServiceProvider = async (request, response) => {
             booking: booking || {}
         }
 
+        // Save to the database
         const newServiceProvider = new ServiceProviderModel(ServiceProviderData);
         await newServiceProvider.save();
 
-        const token = jwt.register({id:serviceProvider._id}, process.env.JWT_SECRET);
+        // Generate JWT
+        const token = jwt.sign({id:serviceProvider._id}, process.env.JWT_SECRET);
         return response.json(token);
 
         // console.log("Service provider information is being saved:", ServiceProviderData);

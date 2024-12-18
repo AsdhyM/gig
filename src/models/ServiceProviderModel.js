@@ -27,7 +27,7 @@ const ServiceProviderSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    tradeSkill: {
+    tradeskill: {
         type: String,
         required: true,
     },
@@ -60,6 +60,10 @@ const ServiceProviderSchema = new mongoose.Schema({
         customerName: { type: String },
         serviceDate: { type: Date },
         comments: { type: String }
+    },
+    approvedBy: {
+        type: String,
+        default: null
     }
 },{minimize:false})
 
