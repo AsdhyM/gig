@@ -5,9 +5,13 @@ const { upload } = require("../middleware/fileUpload");
 
 const serviceProviderRouter = express.Router();
 
+console.log("Service provider routes are being initialized");
 
 serviceProviderRouter.post(
-    '/register', 
+    '/register', (request, response, next) => {
+        console.log("POST /serviceprovider/register called");
+        next();
+    },
     // Admin authentication middleware
     authAdmin, 
     // File upload middleware

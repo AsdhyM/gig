@@ -5,9 +5,14 @@ const { authAdmin } = require("../middleware/authAdmin");
 
 const adminRouter = express.Router();
 
+console.log("Admin routes are being initialized");
+
 // Add service provider Route
 adminRouter.post(
-    '/addserviceprovider', 
+    '/addserviceprovider', (request, response, next) => {
+        console.log("POST /admin/addserviceprovider called");
+        next();
+    },
     // Admin authentication middleware
     authAdmin, 
     // File upload middleware
@@ -20,7 +25,10 @@ adminRouter.post(
 );
 
 // Admin Login Route
-adminRouter.post('/login', adminLogin);
+adminRouter.post('/login', (request, response, next) => {
+    console.log("POST /admin/login called");
+    next();
+}, adminLogin);
 
 module.exports = {
     adminRouter

@@ -2,6 +2,8 @@ require('dotenv').config();
 
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const cloudinary = require("cloudinary");
 const { ServiceProviderModel } = require('../models/ServiceProviderModel');
 
 const jwtSecret = process.env.JWT_SECRET;
@@ -10,6 +12,7 @@ const jwtSecret = process.env.JWT_SECRET;
 
 // API for admin Login
 const adminLogin = async (request, response) => {
+    console.log("AdminLogin invoked with data:", request.body);
     try {
 
         const {email, password} = request.body
@@ -41,29 +44,55 @@ const adminLogin = async (request, response) => {
 
 // API to add service provider
 const addServiceProvider = async (request, response) => {
+    console.log("addServiceProvider invoked with data:", request.body);
     try {
-        const {name, email, image, tradeskill, documentation, experience, about} = request.body;
-
+        const {name, email, password, tradeskill, experience, about} = request.body;
+        const image = request.files?.image?.[0];
+        const documentation = request.files?.documentation;
         // Validate required fields
-        if (!name || !email || !image|| !tradeskill || !documentation || !experience || !about) {
+        if (!name || !email || !password || !image|| !tradeskill || !documentation || !experience || !about) {
             return response.status(400).json({
                 message: "All required fields must be provided."
             });
         }
 
+        // Securing password hashing
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Upload image to Cloudinary
+        const imageUpload = await cloudinary.uploader.upload(image.path, {resource_type:"image"});
+        const imageUrl = imageUpload.secure_url;
+
+        // Initialize document data array
+        const documentData = [];
+        
+        // Upload documents to Cloudinary
+        const documentUrls = [];
+        for (const file of documentation) {
+            const documentUpload = await cloudinary.uploader.upload(file.path, {resource_type:"auto"});
+            documentData.push({
+                fileName: file.originalname,
+                filePath: documentUpload.secure_url,
+                uploadedAt: new Date()
+            });
+        }
+
         // Save the service provider in the database
-        const newServiceProvider = new ServiceProviderModel({
+        const serviceProviderData = {
             name,
             email,
-            image,
+            password: hashedPassword,
+            image: imageUrl,
             tradeskill,
-            documentation,
+            documentation: documentData,
             experience,
             about,
             date: Date.now(),
             availability: "Available"
-        });
+        };
 
+        const newServiceProvider = new ServiceProviderModel(serviceProviderData);
         await newServiceProvider.save();
 
         return response.status(201).json({

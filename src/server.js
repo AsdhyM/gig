@@ -5,7 +5,8 @@ const helmet = require("helmet");
 const { adminRouter } = require('./routes/admin_routes');
 const { serviceProviderRouter } = require('./routes/serviceProvider_routes');
  
-
+console.log("Admin Router:", adminRouter);
+console.log("Service Provider Router:", serviceProviderRouter);
 // Make a server instance
 const app = express();
 
@@ -32,9 +33,16 @@ app.get("/", (request, response) => {
 
 // Middleware - Admin routes
 // localhost:3000/admin
-app.use('/admin', adminRouter);
+app.use('/admin', (request, response, next) => {
+    console.log("Admin route accessed");
+    next();
+}, adminRouter);
+
 // localhost:3000/serviceprovider
-app.use('/serviceprovider', serviceProviderRouter);
+app.use('/serviceprovider', (request, response, next) => {
+    console.log("Service provider route accessed");
+    next();
+}, serviceProviderRouter);
 
 
 // Fallback for undefined routes
