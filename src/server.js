@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
+const path = require("path");
 const { adminRouter } = require('./routes/admin_routes');
 const { serviceProviderRouter } = require('./routes/serviceProvider_routes');
  
@@ -23,9 +24,8 @@ app.use(cors(corsOptions));
 app.use(helmet());
 
 
-
 // localhost:3000/
-app.get("/", (request, response) => {
+app.get('/', (request, response) => {
     response.json({
         message:"welcome to GIG!"
     });
@@ -43,6 +43,10 @@ app.use('/serviceprovider', (request, response, next) => {
     console.log("Service provider route accessed");
     next();
 }, serviceProviderRouter);
+
+// Serve static files from the images folder
+// localhost:3000/images
+app.use('/images', express.static(path.join(__dirname, "images")));
 
 
 // Fallback for undefined routes

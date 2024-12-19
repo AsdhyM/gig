@@ -3,12 +3,10 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary").v2;
 const jwt = require("jsonwebtoken");
-const { ServiceProviderModel } = require("../models/ServiceProviderModel");
+const { ServiceProvider } = require("../models/ServiceProviderModel");
 const { upload } = require("../middleware/fileUpload");
 
 
-
-const router = express.Router();
 
 // Register Service Provider
 const registerServiceProvider = async (request, response) => {
@@ -65,7 +63,7 @@ const registerServiceProvider = async (request, response) => {
         console.log("Uploaded files:", request.files);
 
         // Create service provider data
-        const ServiceProviderData = {
+        const serviceProviderData = {
             name: request.body.name,
             email: request.body.email,
             password: hashedPassword,
@@ -80,7 +78,7 @@ const registerServiceProvider = async (request, response) => {
         }
 
         // Save to the database
-        const newServiceProvider = new ServiceProviderModel(ServiceProviderData);
+        const newServiceProvider = new ServiceProvider(serviceProviderData);
         await newServiceProvider.save();
 
         // Generate JWT
