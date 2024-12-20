@@ -26,7 +26,7 @@ const UserSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        default: "http://localhost:3000/images/profileicon.png"
+        default: "http://localhost:3000/images/profilecon.png"
     },
     address: {
         type: String,
@@ -36,7 +36,7 @@ const UserSchema = new mongoose.Schema({
     mobile: {
         type: String,
         default: "0000000000",
-        match: [/^\d{10$/, "Mobile number must be 10 digits"],
+        match: [/^04\d{8}$/, "Mobile number must be 10 digits"],
     },
 })
 

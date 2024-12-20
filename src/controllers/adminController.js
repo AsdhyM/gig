@@ -4,7 +4,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary");
-const { ServiceProviderModel } = require('../models/ServiceProviderModel');
+const { ServiceProvider } = require('../models/ServiceProviderModel');
 
 const jwtSecret = process.env.JWT_SECRET;
 
@@ -66,7 +66,7 @@ const addServiceProvider = async (request, response) => {
 
         // Initialize document data array
         const documentData = [];
-        
+
         // Upload documents to Cloudinary
         const documentUrls = [];
         for (const file of documentation) {
@@ -92,7 +92,7 @@ const addServiceProvider = async (request, response) => {
             availability: "Available"
         };
 
-        const newServiceProvider = new ServiceProviderModel(serviceProviderData);
+        const newServiceProvider = new ServiceProvider(serviceProviderData);
         await newServiceProvider.save();
 
         return response.status(201).json({
