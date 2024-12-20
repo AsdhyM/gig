@@ -15,13 +15,9 @@ userRouter.post(
     upload.fields([{ name: "image", maxCount: 1}]), 
     // Debugging file uploads
     async (request, response, next) => {
-    console.log("Image uploaded:", request.files);
-    // Pass control to the controller
-    next();
-    response.status(201).json({
-        message: "Images successfully uploaded",
-        files: request.files
-    });
+        console.log("Image uploaded:", request.files);
+        // Pass control to the controller
+        next();
     },
     // Register service provider logic 
     registerUser

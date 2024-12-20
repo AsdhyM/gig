@@ -82,7 +82,7 @@ const registerServiceProvider = async (request, response) => {
         await newServiceProvider.save();
 
         // Generate JWT
-        const token = jwt.sign({id:serviceProvider._id}, process.env.JWT_SECRET);
+        const token = jwt.sign({id:newServiceProvider._id}, process.env.JWT_SECRET);
         return response.json(token);
 
         // console.log("Service provider information is being saved:", ServiceProviderData);

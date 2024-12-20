@@ -6,6 +6,28 @@ meta {
 
 post {
   url: http://localhost:3000/serviceprovider/register
-  body: none
-  auth: none
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdpZy5jb20iLCJpYXQiOjE3MzQ2NTE0ODAsImV4cCI6MTczNDY1NTA4MH0.m_a743PaQqwA35Kiat6bN52dfOkKMfmY6iGrSSAAHtA
+}
+
+body:json {
+  {
+    
+  }
+}
+
+body:multipart-form {
+  name: Don Jones
+  email: donjones@email.com
+  password: 12345678
+  image: @file(C:\Users\asdhy\OneDrive\Desktop\random\profile icon.png)
+  tradeskill: plumber
+  experience: 1 year
+  documentation: @file(C:\Users\asdhy\OneDrive\Desktop\random\certificateserviceprovidergig.pdf)
+  about: sdfmasionga
+  availability: Available
 }

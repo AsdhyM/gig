@@ -60,7 +60,7 @@ const registerUser = async (request, response) => {
         await newUser.save();
 
         // Generate JWT
-        const token = jwt.sign({id:user._id}, process.env.JWT_SECRET);
+        const token = jwt.sign({id:newUser._id}, process.env.JWT_SECRET);
         return response.status(201).json({
             token,
             message: "You have been registered successfully"
@@ -71,13 +71,6 @@ const registerUser = async (request, response) => {
         // Handle errors
         console.error("Error during user registration:", error);
         response.status(500).json({ error: "An error occurred, couldn't register user."});
-
-        if (!response.headersSent) {
-            return response.status(500).json({
-                message: "Error while registering new user",
-                error: error.message
-            });
-        }
     }
 }
 
