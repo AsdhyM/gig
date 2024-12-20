@@ -71,7 +71,10 @@ const registerUser = async (request, response) => {
     } catch (error) {
         // Handle errors
         console.error("Error during user registration:", error);
-        response.status(500).json({ error: "An error occurred, couldn't register user."});
+        return response.status(500).json({ 
+            message: "An error occurred, couldn't register user.",
+            error: error.message
+        });
     }
 }
 
@@ -79,7 +82,7 @@ const registerUser = async (request, response) => {
 const loginUser = async (request, response) => {
     try {
         const {email, password} = request.body;
-        const user = await user.findOne({email});
+        const user = await UserModel.findOne({email});
 
         if(!user) {
             return response.json({message: "User doesn't exist"});
@@ -89,20 +92,40 @@ const loginUser = async (request, response) => {
 
         if (isMatch) {
             const token = jwt.sign({id:user._id}, process.env.JWT_SECRET);
-            response.json({token});
+            return response.json({token});
         } else {
-            response.json({message: "Invalid credentials"})
+            return response.json({message: "Invalid credentials"})
         }
     } catch (error) {
         // Handle errors
         console.error("Error during user Login:", error);
-        response.status(500).json({ error: "An error occurred, couldn't login user."});
+        return response.status(500).json({ error: "An error occurred, couldn't login user."});
     }
 }
+
+// get user profile API
+const getProfile = async (request, response) => {
+    try {
+        const { userId } = request.body;
+        const userData = await UserModel.findById(userId).select('-password');
+
+        return response.json({userData})
+    } catch (error) {
+        console.log(error)
+        return response.json({message: error.message})
+    }
+}
+
+// update user profile API
+const updateProfile = (request, response) => {
+    
+}
+
 
 
 // Export the router for the app to use
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    getProfile
 }

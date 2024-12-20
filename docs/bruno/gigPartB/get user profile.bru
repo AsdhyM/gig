@@ -1,0 +1,19 @@
+meta {
+  name: get user profile
+  type: http
+  seq: 9
+}
+
+get {
+  url: http://localhost:3000/user/getprofile
+  body: none
+  auth: bearer
+}
+
+headers {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NjRjZDI0Mzk4ZDU0NTdiNDI2NDZlOSIsImlhdCI6MTczNDY4MjA1N30.R2eiXdL2TUtxhMHALj8HuAvNmHNDuAkA6BLj5jBVXn0
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NjRjZDI0Mzk4ZDU0NTdiNDI2NDZlOSIsImlhdCI6MTczNDY4MjA1N30.R2eiXdL2TUtxhMHALj8HuAvNmHNDuAkA6BLj5jBVXn0
+}

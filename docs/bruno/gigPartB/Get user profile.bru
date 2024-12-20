@@ -1,0 +1,20 @@
+meta {
+  name: Get user profile
+  type: http
+  seq: 9
+}
+
+get {
+  url: http://localhost:3000/user/getprofile
+  body: none
+  auth: bearer
+}
+
+headers {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NjRjZDI0Mzk4ZDU0NTdiNDI2NDZlOSIsImlhdCI6MTczNDY4MTYwNn0.rtVRRt8cezVjGeLiXbDxQ3_6jjf8c3uPcR-4h-d3xA0
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NjRjZDI0Mzk4ZDU0NTdiNDI2NDZlOSIsImlhdCI6MTczNDY4MTg4MX0.7m80NOoqS1xqpWhQW-igI0yetiU9hby22BMSUfq1xco
+  Authorization header missing or invalid undefined
+}

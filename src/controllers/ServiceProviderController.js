@@ -111,7 +111,7 @@ const registerServiceProvider = async (request, response) => {
 const loginServiceProvider = async (request, response) => {
     try {
         const {email, password} = request.body;
-        const ServiceProvider = await ServiceProvider.findOne({email});
+        const ServiceProvider = await ServiceProviderModel.findOne({email});
 
         if(!ServiceProvider) {
             return response.json({message: "Service Provider doesn't exist"});
