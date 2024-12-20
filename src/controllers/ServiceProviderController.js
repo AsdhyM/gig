@@ -90,7 +90,10 @@ const registerServiceProvider = async (request, response) => {
 
         // Generate JWT
         const token = jwt.sign({id:newServiceProvider._id}, process.env.JWT_SECRET);
-        return response.json(token);
+        return response.json({
+            token,
+            message: "You have been registered successfully"
+        });
 
         // console.log("Service provider information is being saved:", ServiceProviderData);
 
@@ -101,8 +104,11 @@ const registerServiceProvider = async (request, response) => {
 
     } catch (error) {
         // Handle errors
-        console.error(error);
-        response.status(500).json({ error: "An error occurred, couldn't add service provider."});
+        console.error("Error during service provider registration:", error);
+        return response.status(500).json({ 
+            message: "An error occurred, couldn't add service provider.",
+            error: error.message
+        });
     }
 }
 
@@ -111,16 +117,16 @@ const registerServiceProvider = async (request, response) => {
 const loginServiceProvider = async (request, response) => {
     try {
         const {email, password} = request.body;
-        const ServiceProvider = await ServiceProviderModel.findOne({email});
+        const serviceProvider = await ServiceProviderModel.findOne({email});
 
-        if(!ServiceProvider) {
+        if(!serviceProvider) {
             return response.json({message: "Service Provider doesn't exist"});
         }
 
-        const isMatch = await bcrypt.compare(password, ServiceProvider.password);
+        const isMatch = await bcrypt.compare(password, serviceProvider.password);
 
         if (isMatch) {
-            const token = jwt.sign({id:ServiceProvider._id}, process.env.JWT_SECRET);
+            const token = jwt.sign({id:serviceProvider._id}, process.env.JWT_SECRET);
             response.json({token});
         } else {
             response.json({message: "Invalid credentials"})
@@ -132,7 +138,134 @@ const loginServiceProvider = async (request, response) => {
     }
 }
 
+// get service provider profile API
+const getServiceProviderProfile = async (request, response) => {
+    try {
+        const { serviceProviderId } = request.body;
+        // Validate if serviceProviderId exist in the request
+        if (!serviceProviderId) {
+            return response.status(400).json({
+                message: "Service Provider ID is missing!"
+            });
+        }
+        // Find Service Provider by ID
+        const serviceProviderData = await ServiceProviderModel.findById(serviceProviderId).select('-password');
+        // Validate if Service Provider exists
+        if (!serviceProviderData) {
+            return response.status(404).json({
+                message: "Service Provider not found!"
+            });
+        }
+        return response.status(200).json({
+            message: "Service Provider profile retrieved successfully",
+            serviceProviderData
+        });
+
+    } catch (error) {
+        console.log("Error while getting Service Provider Profile:", error);
+        return response.status(500).json({
+            message: "Couldn't get Service Provider profile",
+            error: error.message
+        });
+    }
+}
+
+// update service provider profile API
+const updateServiceProviderProfile = async (request, response) => {
+    try {
+        const {serviceProviderId, name, tradeskill, experience, about, availability} = request.body;
+        const image = request.file?.image?.[0];
+        const documentation = request.files?.documentation || [];
+
+        // Validate required fields
+        if (!name || !tradeskill || !experience || !about || !availability) {
+            return response.status(400).json({
+                message: "Missing details"
+            });
+        }
+
+        // Update fields
+        const updateData = {name, tradeskill, experience, about, availability};
+
+        // Upload image
+        if (image) {
+            try {
+                const imageUpload = await cloudinary.uploader.upload(image.path, {resource_type:"image"});
+                updateData.image = imageUpload.secure_url;
+            } catch (error){
+                console.error("Error uploading image:", error);
+                if (!response.headersSent){
+                    return response.status(500).json({
+                        message: "Image upload failed",
+                        error: error.message
+                    });
+                }
+            }
+            
+        }
+        
+
+        // Upload documents
+        
+        if (documentation.length > 0) {
+            const documentData = []
+            try {
+                for (const doc of documentation) {
+                    const documentUpload = await cloudinary.uploader.upload(doc.path, {resource_type:"auto"});
+                    documentData.push({
+                        fileName : doc.originalname,
+                        filePath: documentUpload.secure_url,
+                        uploadedAt: new Date()
+                    });
+                }
+                updateData.documentation = documentData;
+            } catch (error) {
+                console.error("Error uploading documentation:", error);
+                if (!response.headersSent){
+                    return response.status(500).json({
+                        message: "Document upload failed",
+                        error: error.message
+                    });
+                }
+            }
+        } 
+
+        
+        // Update user profile in the database
+        await ServiceProviderModel.findByIdAndUpdate(serviceProviderId, updateData);
+
+        if (!response.headersSent){
+            return response.status(200).json({
+                message: "Service Provider profile updated",
+            });
+        }
+
+        // return response.status(200).json({
+        //     message: "Service Provider profile updated successfully"
+        // });
+
+    } catch (error) {
+        console.log("Error while updateProfile:", error);
+        // return response.status(500).json({
+        //     message: "Couldn't update Service Provider profile",
+        //     error: error.message
+
+        // });
+        
+        if (!response.headersSent){
+            return response.status(500).json({
+                message: "Couldnt update service provider profile",
+                error: error.message
+            });
+        }
+    }
+}
+
+
+
 module.exports = {
     registerServiceProvider,
-    loginServiceProvider
+    loginServiceProvider,
+    getServiceProviderProfile,
+    updateServiceProviderProfile
 }

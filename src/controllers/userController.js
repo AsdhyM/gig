@@ -107,18 +107,75 @@ const loginUser = async (request, response) => {
 const getProfile = async (request, response) => {
     try {
         const { userId } = request.body;
+        // Validate if userId exist in the request
+        if (!userId) {
+            return response.status(400).json({
+                message: "User ID is missing!"
+            });
+        }
+        // Find user by ID
         const userData = await UserModel.findById(userId).select('-password');
+        // Validate if user exists
+        if (!userData) {
+            return response.status(404).json({
+                message: "User not found!"
+            });
+        }
+        return response.status(200).json({
+            message: "User profile retrieved successfully",
+            userData
+        });
 
-        return response.json({userData})
     } catch (error) {
-        console.log(error)
-        return response.json({message: error.message})
+        console.log("Error while getProfile:", error);
+        return response.status(500).json({
+            message: "Couldn't get user profile",
+            error: error.message
+        });
     }
 }
 
 // update user profile API
-const updateProfile = (request, response) => {
-    
+const updateProfile = async (request, response) => {
+    try {
+        const {userId, name, address, mobile} = request.body;
+        const image = request.file?.image?.[0];
+
+        // Validate required fields
+        if (!name || !address || !mobile){
+            return response.status(400).json({
+                message: "Missing details"
+            });
+        }
+
+        // Validate mobile
+        if (!validator.isMobilePhone(mobile, "any")) {
+            return response.status(400).send("Enter a valid mobile number");
+        }
+
+        // Update fields
+        const updateData = {name, address, mobile};
+
+        // Upload image if provided
+        if (image) {
+            const imageUpload = await cloudinary.uploader.upload(image.path, {resource_type:"image"});
+            updateData.image = imageUpload.secure_url;
+        }
+
+        // Update user profile in the database
+        await UserModel.findByIdAndUpdate(userId, updateData);
+
+        return response.status(200).json({
+            message: "User profile updated successfully"
+        });
+
+    } catch (error) {
+        console.log("Error while updateProfile:", error);
+        return response.status(500).json({
+            message: "Couldn't update user profile",
+            error: error.message
+        });
+    }
 }
 
 
@@ -127,5 +184,6 @@ const updateProfile = (request, response) => {
 module.exports = {
     registerUser,
     loginUser,
-    getProfile
+    getProfile,
+    updateProfile
 }

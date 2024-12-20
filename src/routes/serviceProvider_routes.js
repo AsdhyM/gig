@@ -1,7 +1,9 @@
 const express = require("express");
-const { registerServiceProvider, loginServiceProvider } = require("../controllers/ServiceProviderController");
+const { registerServiceProvider, loginServiceProvider, getServiceProviderProfile, updateServiceProviderProfile } = require("../controllers/ServiceProviderController");
 const { authAdmin } = require("../middleware/authAdmin");
 const { upload } = require("../middleware/fileUpload");
+const { authServiceProvider } = require("../middleware/authServiceProvider");
+
 
 const serviceProviderRouter = express.Router();
 
@@ -34,6 +36,29 @@ serviceProviderRouter.post(
 );
 
 serviceProviderRouter.post('/login', loginServiceProvider)
+
+serviceProviderRouter.get('/getprofile', authServiceProvider, getServiceProviderProfile)
+
+serviceProviderRouter.post(
+    '/updateprofile', 
+    authAdmin,
+    upload.fields([
+        { name: "image", maxCount: 1},
+        { name: "documentation", maxCount: 5 }
+    ]),
+     // Debugging file uploads
+     async (request, response, next) => {
+        console.log("request files:", request.files);
+        console.log("request body:", request.body);
+        // Pass control to the controller
+        next();
+        response.status(201).json({
+            message: "Files successfully uploaded",
+            files: request.files
+        });
+        },
+    updateServiceProviderProfile
+)
 
 module.exports = {
     serviceProviderRouter
