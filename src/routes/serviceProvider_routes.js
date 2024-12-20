@@ -1,5 +1,5 @@
 const express = require("express");
-const { registerServiceProvider } = require("../controllers/ServiceProviderController");
+const { registerServiceProvider, loginServiceProvider } = require("../controllers/ServiceProviderController");
 const { authAdmin } = require("../middleware/authAdmin");
 const { upload } = require("../middleware/fileUpload");
 
@@ -32,6 +32,8 @@ serviceProviderRouter.post(
     // Register service provider logic 
     registerServiceProvider
 );
+
+serviceProviderRouter.post('/login', loginServiceProvider)
 
 module.exports = {
     serviceProviderRouter

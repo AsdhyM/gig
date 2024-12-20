@@ -3,12 +3,12 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary").v2;
 const jwt = require("jsonwebtoken");
-const { ServiceProvider } = require("../models/ServiceProviderModel");
+const { ServiceProviderModel } = require("../models/ServiceProviderModel");
 const { upload } = require("../middleware/fileUpload");
 
 
 
-// Register Service Provider
+// Register Service Provider API
 const registerServiceProvider = async (request, response) => {
     try {
         const {name, email, password, tradeskill, experience, about, date, booking} = request.body;
@@ -55,11 +55,18 @@ const registerServiceProvider = async (request, response) => {
         const imageUrl = imageUpload.secure_url;
 
         // Upload documents to Cloudinary
-        const documentUrls = [];
-        for (const file of documentation) {
-            const documentUpload = await cloudinary.uploader.upload(file.path, {resource_type:"auto"});
-            documentUrls.push(documentUpload.secure_url);
+        const documentData = [];
+        if (documentation && documentation > 0) {
+            for (const doc of documentation) {
+                const documentUpload = await cloudinary.uploader.upload(doc.path, {resource_type:"auto"});
+                documentData.push({
+                    fileName : doc.originalname,
+                    filePath: documentUpload.secure_url,
+                    uploadedAt: new Date()
+                });
+            }
         }
+        
         console.log("Uploaded files:", request.files);
 
         // Create service provider data
@@ -69,7 +76,7 @@ const registerServiceProvider = async (request, response) => {
             password: hashedPassword,
             image: imageUrl,
             tradeskill: request.body.tradeskill,
-            documentation: documentUrls,
+            documentation: documentData,
             experience: request.body.experience,
             about: request.body.about,
             availability: request.body.availability,
@@ -78,7 +85,7 @@ const registerServiceProvider = async (request, response) => {
         }
 
         // Save to the database
-        const newServiceProvider = new ServiceProvider(serviceProviderData);
+        const newServiceProvider = new ServiceProviderModel(serviceProviderData);
         await newServiceProvider.save();
 
         // Generate JWT
@@ -99,6 +106,33 @@ const registerServiceProvider = async (request, response) => {
     }
 }
 
+
+// Service provider login API
+const loginServiceProvider = async (request, response) => {
+    try {
+        const {email, password} = request.body;
+        const ServiceProvider = await ServiceProvider.findOne({email});
+
+        if(!ServiceProvider) {
+            return response.json({message: "Service Provider doesn't exist"});
+        }
+
+        const isMatch = await bcrypt.compare(password, ServiceProvider.password);
+
+        if (isMatch) {
+            const token = jwt.sign({id:ServiceProvider._id}, process.env.JWT_SECRET);
+            response.json({token});
+        } else {
+            response.json({message: "Invalid credentials"})
+        }
+    } catch (error) {
+        // Handle errors
+        console.error("Error during Service provider Login:", error);
+        response.status(500).json({ error: "An error occurred, couldn't login Service provider."});
+    }
+}
+
 module.exports = {
-    registerServiceProvider
+    registerServiceProvider,
+    loginServiceProvider
 }

@@ -25,7 +25,7 @@ const adminLogin = async (request, response) => {
         // Verify admin credentials
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
             
-            const token = jwt.sign({ email }, jwtSecret, { expiresIn: "1h" });
+            const token = jwt.sign({ email }, jwtSecret, { expiresIn: "3h" });
 
             return response.status(200).send({token});
 

@@ -68,9 +68,9 @@ const ServiceProviderSchema = new mongoose.Schema({
 },{minimize:false})
 
 // Model based on the schema
-const ServiceProvider = mongoose.model("ServiceProvider", ServiceProviderSchema);
+const ServiceProviderModel = mongoose.model("ServiceProvider", ServiceProviderSchema);
 
 // Exporting the model
 module.exports = {
-    ServiceProvider
+    ServiceProviderModel
 }
