@@ -6,6 +6,24 @@ meta {
 
 post {
   url: http://localhost:3000/serviceprovider/updateprofile
-  body: none
-  auth: none
+  body: multipartForm
+  auth: bearer
+}
+
+headers {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdpZy5jb20iLCJpYXQiOjE3MzQ2OTk5OTcsImV4cCI6MTczNDcxMDc5N30.iEq7pgnxYl7iye41ALv9HqH4CdAglQ6nY3KVcuIjM6A
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdpZy5jb20iLCJpYXQiOjE3MzQ2OTk5OTcsImV4cCI6MTczNDcxMDc5N30.iEq7pgnxYl7iye41ALv9HqH4CdAglQ6nY3KVcuIjM6A
+}
+
+body:multipart-form {
+  name: Donald Jones
+  tradeskill: Tiler
+  experience: 2 years
+  about: hobbie
+  availability: Available
+  image: @file(C:\Users\asdhy\OneDrive\Desktop\random\man.jpg)
+  documentation: @file(C:\Users\asdhy\OneDrive\Desktop\random\certificateserviceprovidergig.pdf)
 }

@@ -4,9 +4,9 @@ meta {
   seq: 10
 }
 
-get {
-  url: http://localhost:3000/user/getprofile
-  body: none
+post {
+  url: http://localhost:3000/user/updateprofile
+  body: multipartForm
   auth: bearer
 }
 
@@ -16,4 +16,11 @@ headers {
 
 auth:bearer {
   token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NjRjZDI0Mzk4ZDU0NTdiNDI2NDZlOSIsImlhdCI6MTczNDY4MjA1N30.R2eiXdL2TUtxhMHALj8HuAvNmHNDuAkA6BLj5jBVXn0
+}
+
+body:multipart-form {
+  name: Gabriel Tin
+  address: Sydney
+  mobile: 0404789456
+  image: @file(C:\Users\asdhy\OneDrive\Desktop\random\man.jpg)
 }
